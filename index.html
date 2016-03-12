@@ -1,5 +1,6 @@
 <html>
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.0/jquery.min.js"></script>
+<link rel="stylesheet" type="text/css" href="/static/style.css">
+<script src="/static/jquery-1.12.1.min.js"></script>
 <script>
 $( document ).ready(function() {
     var canvas = document.getElementById("canvas");
@@ -163,24 +164,19 @@ $( document ).ready(function() {
 		}
 	}
 	
-	
-	
-	
 	drawBoard();
 	connect();
-	
-	
 	
 });
 </script>
 
 
 
-<body style='background: lightblue;'>
+<body>
 	<table>
 	<tr>
-	<td><canvas id="canvas" width="430px" height="840px" style="background: #fff;  margin:20px;"></canvas></td>
-	<td><div style='background: gray;' id=sessionState></div></td>
+	<td><canvas id="canvas" width="430px" height="840px"></canvas></td>
+	<td><div id=sessionState></div></td>
 	</tr>
 	</table>
 	

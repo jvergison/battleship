@@ -31,7 +31,13 @@ func main() {
 	log.SetFlags(0)
 	http.HandleFunc("/battleshipServer", battleship)
 	http.HandleFunc("/", home)
+
+	http.HandleFunc("/static/", static)
 	log.Fatal(http.ListenAndServe(*addr, nil))
+}
+
+func static(w http.ResponseWriter, r *http.Request) {
+	http.ServeFile(w, r, r.URL.Path[1:])
 }
 
 func home(w http.ResponseWriter, r *http.Request) {
