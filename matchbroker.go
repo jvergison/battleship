@@ -20,7 +20,7 @@ func brokeGame(c *Connection, numConns int) bool {
 		openGames = append(openGames, game)
 		openGamesMu.Unlock()
 
-		fmt.Println("player %d started new game %d", c.id, game.id)
+		fmt.Printf("player %d started new game %d\n", c.id, game.id)
 
 		id = id + 1
 
@@ -44,7 +44,7 @@ func joinOpenGame(c *Connection) Game {
 
 	game.PlayerTwo = c
 	game.currentPhase = P_PLACEMENT
-	fmt.Println("player %d joined game %d", c.id, game.id)
+	fmt.Printf("player %d joined game %d\n", c.id, game.id)
 
 	return game
 }
