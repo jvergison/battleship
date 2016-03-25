@@ -34,6 +34,8 @@ func makeConnection(w http.ResponseWriter, r *http.Request) {
 	conns = append(conns, c)
 	connCount = connCount + 1
 
+	brokeGame(&c, connCount)
+
 	for {
 		mt, message, err := conn.ReadMessage() //keep listening
 		if err != nil {
