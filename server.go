@@ -17,6 +17,8 @@ func main() {
 	flag.Parse()
 	log.SetFlags(0)
 
+	initMessageHandler()
+
 	router := NewRouter()
 	log.Fatal(http.ListenAndServe(*addr, router))
 }

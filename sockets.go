@@ -5,17 +5,19 @@ import (
 	"github.com/gorilla/websocket"
 	"log"
 	"net/http"
+	"time"
 )
 
-var connCount = 1
+var connCount uint = 1
 
 var upgrader = websocket.Upgrader{
 //default options
 }
 
 type Connection struct {
-	socket *websocket.Conn
-	id     int
+	socket    *websocket.Conn
+	id        uint
+	player_id uint
 }
 
 var conns []Connection
@@ -34,20 +36,23 @@ func makeConnection(w http.ResponseWriter, r *http.Request) {
 	conns = append(conns, c)
 	connCount = connCount + 1
 
-	brokeGame(&c, connCount)
+	//let the client know we are ready to receive messages
+	var m = Message{M_CONNECTION_OK, time.Now(), nil}
+	err = conn.WriteMessage(websocket.TextMessage, makeMessage(m))
 
+	if err != nil {
+		log.Println("write:", err)
+		return
+	}
+
+	//start listening to messages
 	for {
-		mt, message, err := conn.ReadMessage() //keep listening
+		mt, message, err := conn.ReadMessage()
 		if err != nil {
-			log.Println("read:", err)
+			log.Println("read:", err) //TODO: add player/game id if applicable
 			break
 		}
-		log.Printf("recv: %s", message)
-		err = conn.WriteMessage(mt, message)
-		if err != nil {
-			log.Println("write:", err)
-			break
-		}
+		handleMessage(mt, message, err, &c)
 	}
 
 }

@@ -9,9 +9,9 @@ var onGoingGames []Game
 
 var openGamesMu = &sync.Mutex{}
 var openGames []Game
-var id int = 1
+var id uint = 1
 
-func brokeGame(c *Connection, numConns int) bool {
+func brokeGame(c *Connection) bool {
 	var game Game
 	if len(openGames) == 0 {
 		game = Game{id, c, nil, P_STARTUP}

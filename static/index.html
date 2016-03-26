@@ -18,6 +18,18 @@ $( document ).ready(function() {
 		webSocket.onopen= function(event){
 			jSessionState.append("<p>Connected</p>");
 		}
+		
+		webSocket.onmessage = function(event){
+			console.log(event.data);
+			
+			var message = {
+				Type: "Broker new game",
+				Timestamp: new Date(),
+				Data:null
+			};
+			webSocket.send(JSON.stringify(message));
+		}
+		
 	}
 	connect();
 	
