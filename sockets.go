@@ -17,7 +17,7 @@ var upgrader = websocket.Upgrader{
 type Connection struct {
 	socket    *websocket.Conn
 	id        uint
-	player_id uint
+	player_id string
 }
 
 var conns []Connection

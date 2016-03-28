@@ -9,7 +9,7 @@ const (
 )
 
 type Game struct {
-	id           uint
+	id           string
 	PlayerOne    *Connection
 	PlayerTwo    *Connection
 	currentPhase int
