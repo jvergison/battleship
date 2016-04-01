@@ -52,7 +52,7 @@ func makeConnection(w http.ResponseWriter, r *http.Request) {
 		if err != nil {
 			c.disconnected = true
 			onDisconnect(&c)
-			log.Println("read:", err) //TODO: add player/game id if applicable
+			log.Printf("read, player %s : %s", c.player_id, err)
 			break
 		}
 		handleMessage(mt, message, err, &c)

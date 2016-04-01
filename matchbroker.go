@@ -72,15 +72,8 @@ func findGameById(id string) (*Game, error) {
 
 }
 
-func connectionIsInGame(c *Connection) *Game {
-	for _, game := range onGoingGames {
-
-		if game.PlayerOne == c || game.PlayerTwo == c {
-			return &game
-		}
-	}
-
-	return nil
+func connectionIsInGame(c *Connection) bool {
+	return c.player_id != ""
 }
 
 func joinOpenGame(c *Connection) Game {
@@ -101,9 +94,8 @@ func joinOpenGame(c *Connection) Game {
 
 func onDisconnect(c *Connection) {
 	//check if in game
-	var g = connectionIsInGame(c)
 
-	if g != nil {
+	if connectionIsInGame(c) {
 		select {
 		case m := <-ch:
 			//reconnect happened
