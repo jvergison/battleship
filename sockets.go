@@ -15,9 +15,10 @@ var upgrader = websocket.Upgrader{
 }
 
 type Connection struct {
-	socket    *websocket.Conn
-	id        uint
-	player_id string
+	socket       *websocket.Conn
+	id           uint
+	player_id    string
+	disconnected bool
 }
 
 var conns []Connection
@@ -32,7 +33,7 @@ func makeConnection(w http.ResponseWriter, r *http.Request) {
 
 	defer conn.Close() //clean up if we ever exit this function
 
-	var c Connection = Connection{id: connCount, socket: conn}
+	var c Connection = Connection{id: connCount, socket: conn, disconnected: false}
 	conns = append(conns, c)
 	connCount = connCount + 1
 
@@ -49,6 +50,8 @@ func makeConnection(w http.ResponseWriter, r *http.Request) {
 	for {
 		mt, message, err := conn.ReadMessage()
 		if err != nil {
+			c.disconnected = true
+			onDisconnect(&c)
 			log.Println("read:", err) //TODO: add player/game id if applicable
 			break
 		}

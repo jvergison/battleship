@@ -1,3 +1,6 @@
+var battleship;
+
+
 function battleshipGame(canvasId){
 	var self = this;
 	this.canvas = document.getElementById(canvasId);
