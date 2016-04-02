@@ -40,7 +40,7 @@ function connect(){
 
 	webSocket.onerror = function(err) {
 		console.error('Socket encountered error: ', err.message, 'Closing socket');
-		ws.close();
+		webSocket.close();
 	};
 		
 }

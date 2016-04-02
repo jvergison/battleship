@@ -124,8 +124,6 @@ func onDisconnect(c *Connection) {
 				}
 				removePlayer(otherPlayer)
 
-				removefromKnownRandStrings(game.id)
-
 				removeGame(game)
 			}
 
