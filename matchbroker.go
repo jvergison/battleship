@@ -148,7 +148,19 @@ func removeGame(g *Game) {
 	for i, game := range onGoingGames {
 		if g.id == game.id {
 			onGoingGames = append(onGoingGames[:i], onGoingGames[i+1:]...)
+			removefromKnownRandStrings(game.id)
+			return
 		}
 	}
+
+	openGamesMu.Lock()
+	for i, game := range openGames {
+		if g.id == game.id {
+			openGames = append(openGames[:i], openGames[i+1:]...)
+			removefromKnownRandStrings(game.id)
+			return
+		}
+	}
+	openGamesMu.Unlock()
 
 }
