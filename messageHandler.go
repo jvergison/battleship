@@ -42,6 +42,15 @@ func makeMessage(m Message) []byte {
 	return b
 }
 
+func sendMessage(m Message, c *Connection) {
+	var err = c.socket.WriteMessage(websocket.TextMessage, makeMessage(m))
+
+	if err != nil {
+		log.Println("write:", err)
+		return
+	}
+}
+
 func handleBrokeGame(conn *Connection, message Message) {
 	var err error
 	var playerId string
@@ -71,11 +80,6 @@ func handleBrokeGame(conn *Connection, message Message) {
 	}
 
 	var m = Message{action, time.Now(), data}
-	err = conn.socket.WriteMessage(websocket.TextMessage, makeMessage(m))
-
-	if err != nil {
-		log.Println("write:", err)
-		return
-	}
+	sendMessage(m, conn)
 
 }

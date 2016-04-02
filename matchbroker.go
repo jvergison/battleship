@@ -31,8 +31,11 @@ func brokeNewGame(c *Connection) (string, string, error) {
 
 	} else {
 		game = joinOpenGame(c)
+
 		onGoingGames = append(onGoingGames, game)
 	}
+
+	c.game_id = game.id
 
 	return playerId, game.id, nil
 
@@ -73,7 +76,7 @@ func findGameById(id string) (*Game, error) {
 }
 
 func connectionIsInGame(c *Connection) bool {
-	return c.player_id != ""
+	return c.game_id != ""
 }
 
 func joinOpenGame(c *Connection) Game {
@@ -103,10 +106,38 @@ func onDisconnect(c *Connection) {
 			break
 		case <-time.After(3 * time.Minute):
 			fmt.Printf("player %s timed out", c.player_id)
-			c.player_id = ""
+
 			//other player wins, throw away game
+			var game, err = findGameById(c.game_id)
+			if err == nil {
+				var otherPlayer *Connection = nil
+				if game.PlayerOne.player_id == c.player_id {
+					otherPlayer = game.PlayerTwo
+				} else {
+					otherPlayer = game.PlayerOne
+				}
+
+				if otherPlayer.player_id != "" {
+					//send victory message to player
+					var m = Message{M_PLAYER_WON, time.Now(), nil}
+					sendMessage(m, otherPlayer)
+				}
+				removePlayer(otherPlayer)
+
+				removefromKnownRandStrings(game.id)
+			}
+
+			removePlayer(c)
+
 			break
 		}
 	}
+
+}
+
+func removePlayer(c *Connection) {
+	removefromKnownRandStrings(c.player_id)
+	c.player_id = ""
+	c.game_id = ""
 
 }

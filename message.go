@@ -9,6 +9,8 @@ const (
 	M_REJOIN_GAME_OK   string = "Rejoin game ok"
 	M_FAIL_REJOIN_GAME string = "Failed rejoin game"
 	M_FAIL_JOIN_GAME   string = "Failed join game"
+	M_PLAYER_WON       string = "Player won game"
+	M_PLAYER_LOST      string = "Player lost game"
 )
 
 type Message struct {

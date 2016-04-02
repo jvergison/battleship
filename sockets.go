@@ -18,6 +18,7 @@ type Connection struct {
 	socket       *websocket.Conn
 	id           uint
 	player_id    string
+	game_id      string
 	disconnected bool
 }
 
@@ -39,12 +40,7 @@ func makeConnection(w http.ResponseWriter, r *http.Request) {
 
 	//let the client know we are ready to receive messages
 	var m = Message{M_CONNECTION_OK, time.Now(), nil}
-	err = conn.WriteMessage(websocket.TextMessage, makeMessage(m))
-
-	if err != nil {
-		log.Println("write:", err)
-		return
-	}
+	sendMessage(m, &c)
 
 	//start listening to messages
 	for {
