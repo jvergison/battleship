@@ -147,7 +147,7 @@ func removePlayer(c *Connection) {
 func removeGame(g *Game) {
 	for i, game := range onGoingGames {
 		if g == game {
-			onGoingGames = append(s[:i], s[i+1:]...)
+			onGoingGames = append(onGoingGames[:i], onGoingGames[i+1:]...)
 		}
 	}
 
