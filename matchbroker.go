@@ -125,6 +125,8 @@ func onDisconnect(c *Connection) {
 				removePlayer(otherPlayer)
 
 				removefromKnownRandStrings(game.id)
+
+				removeGame(game)
 			}
 
 			removePlayer(c)
@@ -139,5 +141,14 @@ func removePlayer(c *Connection) {
 	removefromKnownRandStrings(c.player_id)
 	c.player_id = ""
 	c.game_id = ""
+
+}
+
+func removeGame(g *Game) {
+	for i, game := range onGoingGames {
+		if g == game {
+			onGoingGames = append(s[:i], s[i+1:]...)
+		}
+	}
 
 }
