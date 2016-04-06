@@ -24,8 +24,14 @@ function connect(){
 		}
 		if(msg.Type == "Join game ok"){
 			playerId = msg.Data.PlayerId;
-			gameId = msg.Data.GameId;
+-			gameId = msg.Data.GameId;
 			jSessionState.append("<p>Joined game</p>");
+			jSessionState.append("<p>Waiting for other player...</p>");
+			
+			
+		}
+		if(msg.Type == "Player won game") {
+			jSessionState.append("<p>Congratulations, you won!</p>")
 		}
 	}	
 	

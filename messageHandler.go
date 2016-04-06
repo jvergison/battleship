@@ -28,6 +28,10 @@ func handleMessage(messageType int, message []byte, err error, conn *Connection)
 		return
 	}
 	//call messageHandlers[messagetype]
+	if messageHandlers[m.Type] == nil {
+		log.Println("Invalid message received: ", m.Type)
+		return
+	}
 	messageHandlers[m.Type](conn, m)
 
 }
@@ -81,5 +85,9 @@ func handleBrokeGame(conn *Connection, message Message) {
 
 	var m = Message{action, time.Now(), data}
 	sendMessage(m, conn)
+
+	if action != M_REJOIN_GAME_OK && action != M_FAIL_REJOIN_GAME { //if not rejoining
+		checkMatchReady(gameId)
+	}
 
 }

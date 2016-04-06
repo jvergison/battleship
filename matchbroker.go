@@ -3,6 +3,7 @@ package main
 import (
 	"errors"
 	"fmt"
+	"log"
 	"sync"
 	"time"
 )
@@ -43,7 +44,7 @@ func brokeNewGame(c *Connection) (string, string, error) {
 
 func rejoinGame(c *Connection, gameId string, playerId string) error {
 
-	var game, err = findGameById(gameId)
+	var game, err = findOngoingGameById(gameId)
 
 	if err == nil {
 		if game.PlayerOne.player_id == playerId {
@@ -64,7 +65,7 @@ func rejoinGame(c *Connection, gameId string, playerId string) error {
 	return nil
 }
 
-func findGameById(id string) (*Game, error) {
+func findOngoingGameById(id string) (*Game, error) {
 	for _, game := range onGoingGames {
 		if game.id == id {
 			return &game, nil
@@ -75,6 +76,18 @@ func findGameById(id string) (*Game, error) {
 
 }
 
+func findOpenGameById(id string) (*Game, error) {
+	openGamesMu.Lock()
+	defer openGamesMu.Unlock()
+	for _, game := range openGames {
+		if game.id == id {
+			return &game, nil
+		}
+	}
+
+	return nil, errors.New("game not found")
+
+}
 func connectionIsInGame(c *Connection) bool {
 	return c.game_id != ""
 }
@@ -108,7 +121,7 @@ func onDisconnect(c *Connection) {
 			fmt.Printf("player %s timed out", c.player_id)
 
 			//other player wins, throw away game
-			var game, err = findGameById(c.game_id)
+			var game, err = findOngoingGameById(c.game_id)
 			if err == nil {
 				var otherPlayer *Connection = nil
 				if game.PlayerOne.player_id == c.player_id {
@@ -160,5 +173,25 @@ func removeGame(g *Game) {
 		}
 	}
 	openGamesMu.Unlock()
+
+}
+
+func checkMatchReady(gameId string) {
+	var game, err = findOpenGameById(gameId)
+
+	if game == nil {
+		game, err = findOngoingGameById(gameId)
+	}
+	if game == nil {
+		fmt.Printf("game %s not found\n", gameId)
+		log.Println("error: ", err)
+	}
+
+	if game != nil {
+		if game.PlayerOne != nil && game.PlayerTwo != nil {
+			//start game
+			startGame(game)
+		}
+	}
 
 }

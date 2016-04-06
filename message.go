@@ -11,6 +11,9 @@ const (
 	M_FAIL_JOIN_GAME   string = "Failed join game"
 	M_PLAYER_WON       string = "Player won game"
 	M_PLAYER_LOST      string = "Player lost game"
+	M_WAITING          string = "Waiting for player"
+
+	M_PHASE_PLACEMENT string = "Placement phase"
 )
 
 type Message struct {
