@@ -30,6 +30,12 @@ function connect(){
 			
 			
 		}
+		
+		if(msg.Type == "Placement phase")
+		{
+			//let player place ships and hit ready once done
+		}
+		
 		if(msg.Type == "Player won game") {
 			jSessionState.append("<p>Congratulations, you won!</p>")
 		}
