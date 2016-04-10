@@ -2,14 +2,21 @@ var message = {Type: "", Timestamp:null, Data:null};
 var webSocket;
 var jSessionState;
 var url;
-var playerId;
-var gameId;
+var playerId = "";
+var gameId = "";
+
+function addToLog(text){
+	jSessionState.append(text);
+	jSessionState.stop().animate({
+		scrollTop: jSessionState[0].scrollHeight}, 800);
+}
+
 
 function connect(){
 	webSocket= new WebSocket(url);
-	jSessionState.append("<p>Connecting...</p>");
+	addToLog("Connecting...</br>");
 	webSocket.onopen= function(event){
-		jSessionState.append("<p>Connected</p>");
+		addToLog("Connected</br>");
 	}
 	
 	webSocket.onmessage = function(event){
@@ -24,11 +31,10 @@ function connect(){
 		}
 		if(msg.Type == "Join game ok"){
 			playerId = msg.Data.PlayerId;
--			gameId = msg.Data.GameId;
-			jSessionState.append("<p>Joined game</p>");
-			jSessionState.append("<p>Waiting for other player...</p>");
+			gameId = msg.Data.GameId;
 			
-			
+			addToLog("Joined game</br>");
+			addToLog("Waiting for other player...</br>");			
 		}
 		
 		if(msg.Type == "Placement phase")
@@ -37,7 +43,7 @@ function connect(){
 		}
 		
 		if(msg.Type == "Player won game") {
-			jSessionState.append("<p>Congratulations, you won!</p>")
+			addToLog("<p>Congratulations, you won!</p>")
 		}
 	}	
 	

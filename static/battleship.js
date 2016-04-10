@@ -19,7 +19,7 @@ function battleshipGame(canvasId){
 	this.enemyField = [];
 	this.friendlyField = [];
 	
-	this.drawBoard = function(){
+	this.initBoard = function(){
 		var context = this.context;
 		var bh = this.bh;
 		var bw = this.bw;
@@ -31,44 +31,8 @@ function battleshipGame(canvasId){
 		var enemyField = this.enemyField;
 		var friendlyField = this.friendlyField;
 		
-		context.strokeStyle = "gray";
-		context.stroke();
-		
-		//draw grid
-		
 		var countX = bw/size;
 		var countY = bh/(size*2);
-		for (var x = 0; x <= bw; x += countX) {
-			context.moveTo(leftMargin + x + size, size + topMargin);
-			context.lineTo(leftMargin + x + size, halfBh + size + topMargin);
-			
-			context.moveTo(leftMargin + x + size, size + halfBh + size + topMargin*2);
-			context.lineTo(leftMargin + x + size, halfBh + size + halfBh + size + topMargin*2);
-		}
-		for (var y = 0; y <= halfBh; y += countY) {
-			context.moveTo(leftMargin + size, 0.5 + y + size + topMargin);
-			context.lineTo(leftMargin + bw + size, 0.5 + y + size + topMargin);
-			
-			context.moveTo(leftMargin + size, 0.5 + y + size + halfBh + size + topMargin*2);
-			context.lineTo(leftMargin + bw + size, 0.5 + y + size + halfBh + size + topMargin*2);
-		}
-		
-		
-		context.strokeStyle = "black";
-		context.stroke();
-		
-		//draw numbers/letters
-		
-		for(var i = 1; i <= size; ++i)
-		{
-			context.fillText(i,0.5,0.5+i*countY);
-			context.fillText(i,0.5,0.5+(i+size)*countY + topMargin);
-			
-			
-			context.fillText(letters[i-1], 0.5+i*countY, 10);
-			context.fillText(letters[i-1], 0.5+i*countY, 25 + size*countY);
-		}
-		
 		
 		//fill field arrays
 		
@@ -96,6 +60,79 @@ function battleshipGame(canvasId){
 				friendlyField[col-1][row-1] = friendlySquare;
 				
 			}
+		}
+		
+	}
+	
+	this.drawBoard = function(){
+		var context = this.context;
+		var bh = this.bh;
+		var bw = this.bw;
+		var size = this.size;
+		var leftMargin = this.leftMargin;
+		var halfBh = this.halfBh;
+		var topMargin = this.topMargin;
+		var letters = this.letters;
+		var enemyField = this.enemyField;
+		var friendlyField = this.friendlyField;
+		
+		context.strokeStyle = "gray";
+		context.stroke();
+		
+		
+		this.drawGridLines();
+		this.drawText();
+	}
+	
+	this.drawGridLines = function(){
+		var context = this.context;
+		var bw = this.bw;
+		var bh = this.bh;
+		var size = this.size;
+		var halfBh = bh/2;
+		var leftMargin = this.leftMargin;
+		var topMargin = this.topMargin;
+		var countX = bw/size;
+		var countY = bh/(size*2);
+		for (var x = 0; x <= bw; x += countX) {
+			context.moveTo(leftMargin + x + size, size + topMargin);
+			context.lineTo(leftMargin + x + size, halfBh + size + topMargin);
+			
+			context.moveTo(leftMargin + x + size, size + halfBh + size + topMargin*2);
+			context.lineTo(leftMargin + x + size, halfBh + size + halfBh + size + topMargin*2);
+		}
+		for (var y = 0; y <= halfBh; y += countY) {
+			context.moveTo(leftMargin + size, 0.5 + y + size + topMargin);
+			context.lineTo(leftMargin + bw + size, 0.5 + y + size + topMargin);
+			
+			context.moveTo(leftMargin + size, 0.5 + y + size + halfBh + size + topMargin*2);
+			context.lineTo(leftMargin + bw + size, 0.5 + y + size + halfBh + size + topMargin*2);
+		}
+		
+		
+		context.strokeStyle = "black";
+		context.stroke();
+		
+	}
+	
+	this.drawText = function(){
+		var context = this.context;
+		var bw = this.bw;
+		var bh = this.bh;
+		var size = this.size;
+		var topMargin = this.topMargin;
+		var countX = bw/size;
+		var countY = bh/(size*2);
+		var letters = this.letters;
+		
+		for(var i = 1; i <= size; ++i)
+		{
+			context.fillText(i,0.5,0.5+i*countY);
+			context.fillText(i,0.5,0.5+(i+size)*countY + topMargin);
+			
+			
+			context.fillText(letters[i-1], 0.5+i*countY, 10);
+			context.fillText(letters[i-1], 0.5+i*countY, 25 + size*countY);
 		}
 	}
 	
@@ -177,6 +214,23 @@ function battleshipGame(canvasId){
 	
 	canvas.onmousemove = this.mouseHover;
 	
+	// To enable drag and drop
+	canvas.addEventListener("dragover", function (evt) {
+		evt.preventDefault();
+	}, false);
+	
+	canvas.addEventListener("drop", function (evt) {
+		evt.preventDefault();
+		var id = ev.dataTransfer.getData("text");
+		var img = $("#"+id);
+		//TODO security: check if src url is from correct source
+		//add ship to drawships
+		//redraw
+	//handle boat drop
+	
+	});
+	
+	this.initBoard();
 	this.drawBoard();
 	
 	

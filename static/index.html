@@ -16,6 +16,10 @@ $( document ).ready(function() {
 	
 	connect();
 	
+	function dragShip(ev) {
+		ev.dataTransfer.setData("text", ev.target.id);
+	}
+	
 });
 </script>
 
@@ -25,7 +29,18 @@ $( document ).ready(function() {
 	<table>
 	<tr>
 	<td><canvas id="canvas" width="430px" height="840px"></canvas></td>
-	<td><div id=sessionState></div></td>
+	<td><div id=sessionState style="height: 100px; overflow-y: scroll;"></div>
+		
+		<div id=ships>
+			<img id=ship2 ondragstart="dragShip(event)" draggable=true src="static/img/ship 2.png"/>
+			<img id=ship3 ondragstart="dragShip(event)" draggable=true src="static/img/ship 3.png"/>
+			<img id=ship3-2 ondragstart="dragShip(event)" draggable=true src="static/img/ship 3-2.png"/>
+			<img id=ship4 ondragstart="dragShip(event)" draggable=true src="static/img/ship 4.png"/>
+			<img id=ship5 ondragstart="dragShip(event)" draggable=true src="static/img/ship 5.png"/>
+			</br>
+			<p>Drag onto the lower grid to set. Rightclick to turn.</p>
+		</div>
+	</td>
 	</tr>
 	</table>
 	
