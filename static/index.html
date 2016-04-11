@@ -4,6 +4,10 @@
 <script src="static/battleship.js"></script>
 <script src="static/websocket.js"></script>
 <script>
+function drag(ev) {
+    ev.dataTransfer.setData("text", ev.target.id);
+}
+
 $( document ).ready(function() {
 
 	battleship = new battleshipGame("canvas");
@@ -15,10 +19,8 @@ $( document ).ready(function() {
 	
 	
 	connect();
+	//var offset_data;
 	
-	function dragShip(ev) {
-		ev.dataTransfer.setData("text", ev.target.id);
-	}
 	
 });
 </script>
@@ -32,11 +34,11 @@ $( document ).ready(function() {
 	<td><div id=sessionState style="height: 100px; overflow-y: scroll;"></div>
 		
 		<div id=ships>
-			<img id=ship2 ondragstart="dragShip(event)" draggable=true src="static/img/ship 2.png"/>
-			<img id=ship3 ondragstart="dragShip(event)" draggable=true src="static/img/ship 3.png"/>
-			<img id=ship3-2 ondragstart="dragShip(event)" draggable=true src="static/img/ship 3-2.png"/>
-			<img id=ship4 ondragstart="dragShip(event)" draggable=true src="static/img/ship 4.png"/>
-			<img id=ship5 ondragstart="dragShip(event)" draggable=true src="static/img/ship 5.png"/>
+			<img id=ship2 ondragstart="drag(event)" draggable=true src="static/img/ship 2.png"/>
+			<img id=ship3 ondragstart="drag(event)" draggable=true src="static/img/ship 3.png"/>
+			<img id=ship3-2 ondragstart="drag(event)" draggable=true src="static/img/ship 3-2.png"/>
+			<img id=ship4 ondragstart="drag(event)" draggable=true src="static/img/ship 4.png"/>
+			<img id=ship5 ondragstart="drag(event)" draggable=true src="static/img/ship 5.png"/>
 			</br>
 			<p>Drag onto the lower grid to set. Rightclick to turn.</p>
 		</div>

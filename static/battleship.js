@@ -18,6 +18,7 @@ function battleshipGame(canvasId){
 	
 	this.enemyField = [];
 	this.friendlyField = [];
+	this.ships = [];
 	
 	this.initBoard = function(){
 		var context = this.context;
@@ -82,6 +83,7 @@ function battleshipGame(canvasId){
 		
 		this.drawGridLines();
 		this.drawText();
+		this.drawShips();
 	}
 	
 	this.drawGridLines = function(){
@@ -165,7 +167,21 @@ function battleshipGame(canvasId){
 		context.beginPath();
 		context.rect(square.left+4, square.top+4, (bw/size)-8, (bh/(size*2))-8);
 		context.fillStyle = square.fillStyle;
+
 		context.fill();
+	}
+	
+	
+	this.drawShips = function(){
+		var ships = self.ships;
+		var ctx = self.context;
+		
+		for(var i = 0; i <= ships.length-1; ++i){
+			
+			var img = new Image;
+			img.src = ships[i].src;
+			ctx.drawImage(img,ships[i].x, ships[i].y);
+		}
 	}
 	
 	this.mouseHover = function(e){
@@ -209,6 +225,7 @@ function battleshipGame(canvasId){
 			}
 		}
 		self.fillSquares();
+		self.drawShips();
 		
 	}
 	
@@ -221,14 +238,55 @@ function battleshipGame(canvasId){
 	
 	canvas.addEventListener("drop", function (evt) {
 		evt.preventDefault();
-		var id = ev.dataTransfer.getData("text");
-		var img = $("#"+id);
+		var id = evt.dataTransfer.getData("text");
+		var img = document.getElementById(id);
 		//TODO security: check if src url is from correct source
-		//add ship to drawships
+		
+		var ship = {};
+		ship.src = img.src;
+		ship.x = evt.pageX - self.canvas.offsetLeft - $(this).offset().left;
+		ship.y = evt.pageY - self.canvas.offsetTop - $(this).offset().top;
+				
+		var point = snapToFriendlyGrid(ship.x, ship.y);
+		ship.x = point.x;
+		ship.y = point.y;
+		
+		
+		//todo: move left/down if not completely within grid (depends on size/rotation)
+		self.ships.push(ship);
+		console.log(ship);
+		img.style.display = "none";
+		
 		//redraw
-	//handle boat drop
-	
+		self.drawBoard();
+		
 	});
+	
+	function snapToFriendlyGrid(x,y){
+		var friendlyField = self.friendlyField;
+		var currentX = -10000;
+		var currentY = -10000;
+		console.log(friendlyField);
+		for(var i = 0; i < friendlyField.length; ++i){
+			for(var j=0; j < friendlyField[i].length; ++j)
+			{
+				var sq = friendlyField[i][j];
+				if(Math.abs(x-friendlyField[i][j].left) < Math.abs(x-currentX)  ){
+					currentX = friendlyField[i][j].left;
+				}
+				if(Math.abs(y-friendlyField[i][j].top) < Math.abs(y-currentY)){
+					currentY = friendlyField[i][j].top;
+				}
+			}
+		}
+		
+		var point = {};
+		point.x = currentX;
+		point.y = currentY;
+		
+		
+		return point;
+	}
 	
 	this.initBoard();
 	this.drawBoard();
