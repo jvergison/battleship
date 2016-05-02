@@ -244,17 +244,21 @@ function battleshipGame(canvasId){
 		
 		var ship = {};
 		ship.src = img.src;
+		ship.size = img.getAttribute("data-shipsize");
+		ship.rot = img.getAttribute("data-rot");
 		ship.x = evt.pageX - self.canvas.offsetLeft - $(this).offset().left;
 		ship.y = evt.pageY - self.canvas.offsetTop - $(this).offset().top;
-				
-		var point = snapToFriendlyGrid(ship.x, ship.y);
-		ship.x = point.x;
-		ship.y = point.y;
+			
 		
 		
 		//todo: move left/down if not completely within grid (depends on size/rotation)
+		
+		correctShipPos(ship);
+		var point = snapToFriendlyGrid(ship.x, ship.y);
+		ship.x = point.x;
+		ship.y = point.y;
 		self.ships.push(ship);
-		console.log(ship);
+		
 		img.style.display = "none";
 		
 		//redraw
@@ -266,7 +270,7 @@ function battleshipGame(canvasId){
 		var friendlyField = self.friendlyField;
 		var currentX = -10000;
 		var currentY = -10000;
-		console.log(friendlyField);
+		
 		for(var i = 0; i < friendlyField.length; ++i){
 			for(var j=0; j < friendlyField[i].length; ++j)
 			{
@@ -286,6 +290,59 @@ function battleshipGame(canvasId){
 		
 		
 		return point;
+	}
+	
+	function correctShipPos(ship){
+		
+		
+		
+		//until pos is correct
+		//if horizontal: move left or right
+		//if vertical: move up or down 
+		
+		var check = "nok";
+		
+		while(check != "ok")
+		{
+			check = checkShipPos(ship);
+			//correct it
+			
+			if(check == "right")
+				ship.x += self.size;
+			if(check == "left")
+				ship.x -= self.size;
+			if(check == "down")
+				ship.y += self.size;
+			if(check == "up")
+				ship.y -= self.size;
+		}
+		
+		
+	}
+	
+	function checkShipPos(ship){
+		var countX = self.bw/self.size;
+		var countY = self.bw/(self.size*2);
+		var leftedge = self.leftMargin + self.size;
+		var rightedge = self.leftMargin + 10*countX + self.size;
+		var topedge = 0.5 + (0)*countY + self.size*2 + self.topMargin*2 + self.halfBh;
+		var bottomedge = 0.5 + (9)*countY + self.size*2 + self.topMargin*2 + self.halfBh;
+		if(ship.rot == "hor")
+		{
+			if(ship.x < leftedge)
+				return "right";
+			if(ship.x + ship.size*countX > rightedge)
+				return "left";
+		}
+		else{ //ship is vertical
+			if(ship.y < topedge)
+				return "down";
+			if(ship.y + ship.size*countY > bottomedge)
+				return "up";
+		}
+		
+		
+		return "ok";
 	}
 	
 	this.initBoard();

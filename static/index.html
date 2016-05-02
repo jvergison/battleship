@@ -34,11 +34,11 @@ $( document ).ready(function() {
 	<td><div id=sessionState style="height: 100px; overflow-y: scroll;"></div>
 		
 		<div id=ships>
-			<img id=ship2 ondragstart="drag(event)" draggable=true src="static/img/ship 2.png"/>
-			<img id=ship3 ondragstart="drag(event)" draggable=true src="static/img/ship 3.png"/>
-			<img id=ship3-2 ondragstart="drag(event)" draggable=true src="static/img/ship 3-2.png"/>
-			<img id=ship4 ondragstart="drag(event)" draggable=true src="static/img/ship 4.png"/>
-			<img id=ship5 ondragstart="drag(event)" draggable=true src="static/img/ship 5.png"/>
+			<img id=ship2 data-shipsize="2" data-rot="hor" ondragstart="drag(event)" draggable=true src="static/img/ship 2.png"/>
+			<img id=ship3 data-shipsize="3" data-rot="hor" ondragstart="drag(event)" draggable=true src="static/img/ship 3.png"/>
+			<img id=ship3-2 data-shipsize="3" data-rot="hor" ondragstart="drag(event)" draggable=true src="static/img/ship 3-2.png"/>
+			<img id=ship4 data-shipsize="4" data-rot="hor" ondragstart="drag(event)" draggable=true src="static/img/ship 4.png"/>
+			<img id=ship5 data-shipsize="5" data-rot="hor" ondragstart="drag(event)" draggable=true src="static/img/ship 5.png"/>
 			</br>
 			<p>Drag onto the lower grid to set. Rightclick to turn.</p>
 		</div>

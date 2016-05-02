@@ -115,10 +115,10 @@ func onDisconnect(c *Connection) {
 		select {
 		case m := <-ch:
 			//reconnect happened
-			fmt.Printf("player %s reconnected", m.player_id)
+			fmt.Printf("player %s reconnected\n", m.player_id)
 			break
 		case <-time.After(3 * time.Minute):
-			fmt.Printf("player %s timed out", c.player_id)
+			fmt.Printf("player %s timed out\n", c.player_id)
 
 			//other player wins, throw away game
 			var game, err = findOngoingGameById(c.game_id)
