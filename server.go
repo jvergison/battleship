@@ -19,7 +19,7 @@ func main() {
 
 	initMessageHandler()
 
-	router := NewRouter()
+	router := newRouter()
 	log.Fatal(http.ListenAndServe(*addr, router))
 }
 

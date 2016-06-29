@@ -8,51 +8,51 @@ import (
 	"time"
 )
 
-var onGoingGames []Game
+var onGoingGames []game
 
 var openGamesMu = &sync.Mutex{}
-var openGames []Game
+var openGames []game
 
-var ch = make(chan *Connection)
+var ch = make(chan *connection)
 
-func brokeNewGame(c *Connection) (string, string, error) {
-	var game Game
-	var playerId = RandStrings(1)[0]
-	c.player_id = playerId
+func brokeNewGame(c *connection) (string, string, error) {
+	var gameInstance game
+	var playerID = randStrings(1)[0]
+	c.playerID = playerID
 	if len(openGames) == 0 {
 
-		var gameId = RandStrings(1)[0]
-		game = Game{gameId, c, nil, P_STARTUP}
+		var gameID = randStrings(1)[0]
+		gameInstance = game{gameID, c, nil, pStartUp}
 
 		openGamesMu.Lock()
-		openGames = append(openGames, game)
+		openGames = append(openGames, gameInstance)
 		openGamesMu.Unlock()
 
-		fmt.Printf("player %s started new game %s\n", playerId, game.id)
+		fmt.Printf("player %s started new game %s\n", playerID, gameInstance.id)
 
 	} else {
-		game = joinOpenGame(c)
+		gameInstance = joinOpenGame(c)
 
-		onGoingGames = append(onGoingGames, game)
+		onGoingGames = append(onGoingGames, gameInstance)
 	}
 
-	c.game_id = game.id
+	c.gameID = gameInstance.id
 
-	return playerId, game.id, nil
+	return playerID, gameInstance.id, nil
 
 }
 
-func rejoinGame(c *Connection, gameId string, playerId string) error {
+func rejoinGame(c *connection, gameID string, playerID string) error {
 
-	var game, err = findOngoingGameById(gameId)
+	var gameInstance, err = findOngoingGameByID(gameID)
 
 	if err == nil {
-		if game.PlayerOne.player_id == playerId {
-			game.PlayerOne.socket = c.socket
-			ch <- game.PlayerOne
-		} else if game.PlayerTwo.player_id == playerId {
-			game.PlayerTwo.socket = c.socket
-			ch <- game.PlayerTwo
+		if gameInstance.playerOne.playerID == playerID {
+			gameInstance.playerOne.socket = c.socket
+			ch <- gameInstance.playerOne
+		} else if gameInstance.playerTwo.playerID == playerID {
+			gameInstance.playerTwo.socket = c.socket
+			ch <- gameInstance.playerTwo
 		} else {
 
 			return errors.New("Player id expired")
@@ -65,10 +65,10 @@ func rejoinGame(c *Connection, gameId string, playerId string) error {
 	return nil
 }
 
-func findOngoingGameById(id string) (*Game, error) {
-	for _, game := range onGoingGames {
-		if game.id == id {
-			return &game, nil
+func findOngoingGameByID(id string) (*game, error) {
+	for _, gameInstance := range onGoingGames {
+		if gameInstance.id == id {
+			return &gameInstance, nil
 		}
 	}
 
@@ -76,68 +76,68 @@ func findOngoingGameById(id string) (*Game, error) {
 
 }
 
-func findOpenGameById(id string) (*Game, error) {
+func findOpenGameByID(id string) (*game, error) {
 	openGamesMu.Lock()
 	defer openGamesMu.Unlock()
-	for _, game := range openGames {
-		if game.id == id {
-			return &game, nil
+	for _, gameInstance := range openGames {
+		if gameInstance.id == id {
+			return &gameInstance, nil
 		}
 	}
 
 	return nil, errors.New("game not found")
 
 }
-func connectionIsInGame(c *Connection) bool {
-	return c.game_id != ""
+func connectionIsInGame(c *connection) bool {
+	return c.gameID != ""
 }
 
-func joinOpenGame(c *Connection) Game {
+func joinOpenGame(c *connection) game {
 
-	var game Game
+	var gameInstance game
 
 	openGamesMu.Lock()
-	game = openGames[0]
+	gameInstance = openGames[0]
 	openGames = openGames[1:] //game will be filled
 	openGamesMu.Unlock()
 
-	game.PlayerTwo = c
-	game.currentPhase = P_PLACEMENT
-	fmt.Printf("player %s joined game %s\n", c.player_id, game.id)
+	gameInstance.playerTwo = c
+	gameInstance.currentPhase = pPlacement
+	fmt.Printf("player %s joined game %s\n", c.playerID, gameInstance.id)
 
-	return game
+	return gameInstance
 }
 
-func onDisconnect(c *Connection) {
+func onDisconnect(c *connection) {
 	//check if in game
 
 	if connectionIsInGame(c) {
 		select {
 		case m := <-ch:
 			//reconnect happened
-			fmt.Printf("player %s reconnected\n", m.player_id)
+			fmt.Printf("player %s reconnected\n", m.playerID)
 			break
 		case <-time.After(3 * time.Minute):
-			fmt.Printf("player %s timed out\n", c.player_id)
+			fmt.Printf("player %s timed out\n", c.playerID)
 
 			//other player wins, throw away game
-			var game, err = findOngoingGameById(c.game_id)
+			var gameInstance, err = findOngoingGameByID(c.gameID)
 			if err == nil {
-				var otherPlayer *Connection = nil
-				if game.PlayerOne.player_id == c.player_id {
-					otherPlayer = game.PlayerTwo
+				var otherPlayer *connection
+				if gameInstance.playerOne.playerID == c.playerID {
+					otherPlayer = gameInstance.playerTwo
 				} else {
-					otherPlayer = game.PlayerOne
+					otherPlayer = gameInstance.playerOne
 				}
 
-				if otherPlayer.player_id != "" {
+				if otherPlayer.playerID != "" {
 					//send victory message to player
-					var m = Message{M_PLAYER_WON, time.Now(), nil}
+					var m = message{mPlayerWon, time.Now(), nil}
 					sendMessage(m, otherPlayer)
 				}
 				removePlayer(otherPlayer)
 
-				removeGame(game)
+				removeGame(gameInstance)
 			}
 
 			removePlayer(c)
@@ -148,27 +148,27 @@ func onDisconnect(c *Connection) {
 
 }
 
-func removePlayer(c *Connection) {
-	removefromKnownRandStrings(c.player_id)
-	c.player_id = ""
-	c.game_id = ""
+func removePlayer(c *connection) {
+	removefromKnownRandStrings(c.playerID)
+	c.playerID = ""
+	c.gameID = ""
 
 }
 
-func removeGame(g *Game) {
-	for i, game := range onGoingGames {
-		if g.id == game.id {
+func removeGame(g *game) {
+	for i, gameInstance := range onGoingGames {
+		if g.id == gameInstance.id {
 			onGoingGames = append(onGoingGames[:i], onGoingGames[i+1:]...)
-			removefromKnownRandStrings(game.id)
+			removefromKnownRandStrings(gameInstance.id)
 			return
 		}
 	}
 
 	openGamesMu.Lock()
-	for i, game := range openGames {
-		if g.id == game.id {
+	for i, gameInstance := range openGames {
+		if g.id == gameInstance.id {
 			openGames = append(openGames[:i], openGames[i+1:]...)
-			removefromKnownRandStrings(game.id)
+			removefromKnownRandStrings(gameInstance.id)
 			return
 		}
 	}
@@ -176,21 +176,21 @@ func removeGame(g *Game) {
 
 }
 
-func checkMatchReady(gameId string) {
-	var game, err = findOpenGameById(gameId)
+func checkMatchReady(gameID string) {
+	var gameInstance, err = findOpenGameByID(gameID)
 
-	if game == nil {
-		game, err = findOngoingGameById(gameId)
+	if gameInstance == nil {
+		gameInstance, err = findOngoingGameByID(gameID)
 	}
-	if game == nil {
-		fmt.Printf("game %s not found\n", gameId)
+	if gameInstance == nil {
+		fmt.Printf("game %s not found\n", gameID)
 		log.Println("error: ", err)
 	}
 
-	if game != nil {
-		if game.PlayerOne != nil && game.PlayerTwo != nil {
+	if gameInstance != nil {
+		if gameInstance.playerOne != nil && gameInstance.playerTwo != nil {
 			//start game
-			startGame(game)
+			startGame(gameInstance)
 		}
 	}
 

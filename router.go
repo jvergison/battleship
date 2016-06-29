@@ -5,23 +5,23 @@ import (
 	"net/http"
 )
 
-type Route struct {
-	Name        string
-	Method      string
-	Pattern     string
-	HandlerFunc http.HandlerFunc
+type route struct {
+	name        string
+	method      string
+	pattern     string
+	handlerFunc http.HandlerFunc
 }
 
-type Routes []Route
+type routes []route
 
-var routes = Routes{
-	Route{
+var routeList = routes{
+	route{
 		"Index",
 		"GET",
 		"/",
 		home,
 	},
-	Route{
+	route{
 		"Game",
 		"GET",
 		"/game",
@@ -29,17 +29,17 @@ var routes = Routes{
 	},
 }
 
-func NewRouter() *mux.Router {
+func newRouter() *mux.Router {
 	router := mux.NewRouter().StrictSlash(true)
 	staticHandler := http.StripPrefix("/static/", http.FileServer(http.Dir("./static/")))
 	router.PathPrefix("/static/").Handler(staticHandler)
 
-	for _, route := range routes {
+	for _, r := range routeList {
 		router.
-			Methods(route.Method).
-			Path(route.Pattern).
-			Name(route.Name).
-			Handler(route.HandlerFunc)
+			Methods(r.method).
+			Path(r.pattern).
+			Name(r.name).
+			Handler(r.handlerFunc)
 	}
 
 	return router

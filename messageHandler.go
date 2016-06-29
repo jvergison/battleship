@@ -7,22 +7,22 @@ import (
 	"time"
 )
 
-type MessageHandler struct {
-	Type        string
-	HandlerFunc func(*Connection, Message)
+type messageHandler struct {
+	mType        string
+	handlerFunc func(*connection, message)
 }
 
-var messageHandlers map[string]func(*Connection, Message)
+var messageHandlers map[string]func(*connection, message)
 
 func initMessageHandler() {
-	messageHandlers = make(map[string]func(*Connection, Message))
-	messageHandlers[M_BROKE_NEW_GAME] = handleBrokeGame
+	messageHandlers = make(map[string]func(*connection, message))
+	messageHandlers[mBrokeNewGame] = handleBrokeGame
 }
 
-func handleMessage(messageType int, message []byte, err error, conn *Connection) {
+func handleMessage(messageType int, mess []byte, err error, conn *connection) {
 	//convert message to object
-	var m Message
-	jsonErr := json.Unmarshal(message, &m)
+	var m message
+	jsonErr := json.Unmarshal(mess, &m)
 	if jsonErr != nil {
 		log.Println("json decode:", jsonErr)
 		return
@@ -36,8 +36,9 @@ func handleMessage(messageType int, message []byte, err error, conn *Connection)
 
 }
 
-func makeMessage(m Message) []byte {
+func makeMessage(m message) []byte {
 	b, err := json.Marshal(m)
+	log.Println("sending:",b)
 	if err != nil {
 		log.Println("json encode:", err)
 		return nil
@@ -46,48 +47,48 @@ func makeMessage(m Message) []byte {
 	return b
 }
 
-func sendMessage(m Message, c *Connection) {
+func sendMessage(m message, c *connection) {
 	var err = c.socket.WriteMessage(websocket.TextMessage, makeMessage(m))
-
 	if err != nil {
 		log.Println("write:", err)
 		return
 	}
 }
 
-func handleBrokeGame(conn *Connection, message Message) {
+func handleBrokeGame(conn *connection, mess message) {
+
 	var err error
-	var playerId string
-	var gameId string
+	var playerID string
+	var gameID string
 	var action = ""
 	var data = make(map[string]string)
-	if message.Data != nil {
-		err = rejoinGame(conn, message.Data["GameId"], message.Data["PlayerId"])
-		action = M_REJOIN_GAME_OK
+	if mess.Data != nil {
+		err = rejoinGame(conn, mess.Data["GameId"], mess.Data["PlayerId"])
+		action = mRejoinGameOk
 		if err != nil {
-			action = M_FAIL_REJOIN_GAME
+			action = mFailRejoinGame
 			data["Error"] = err.Error()
 		}
 	} else {
-		playerId, gameId, err = brokeNewGame(conn)
-		action = M_JOIN_GAME_OK
+		playerID, gameID, err = brokeNewGame(conn)
+		action = mJoinGameOk
 		if err != nil {
-			action = M_FAIL_JOIN_GAME
+			action = mFailJoinGame
 			data["Error"] = err.Error()
 		}
 	}
 
 	if err == nil {
 		//send success + player id + game id
-		data["GameId"] = gameId
-		data["PlayerId"] = playerId
+		data["GameId"] = gameID
+		data["PlayerId"] = playerID
 	}
 
-	var m = Message{action, time.Now(), data}
+	var m = message{action, time.Now(), data}
 	sendMessage(m, conn)
 
-	if action != M_REJOIN_GAME_OK && action != M_FAIL_REJOIN_GAME { //if not rejoining
-		checkMatchReady(gameId)
+	if action != mRejoinGameOk && action != mFailRejoinGame { //if not rejoining
+		checkMatchReady(gameID)
 	}
 
 }

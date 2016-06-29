@@ -8,7 +8,7 @@ import (
 const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890 abcdefghijklmnopqrstuvwxyz" +
 	"~!@#$%^&*()-_+={}[]\\|<,>.?/\"';:`"
 
-const Maxlen = 10
+const maxlen = 10
 
 var known map[string]bool
 
@@ -21,21 +21,21 @@ func removefromKnownRandStrings(s string) {
 	known[s] = false
 }
 
-func RandStrings(N int) []string {
+func randStrings(N int) []string {
 	if known == nil {
 		initRandStrings()
 	}
 	r := make([]string, N)
 	ri := 0
-	buf := make([]byte, Maxlen)
+	buf := make([]byte, maxlen)
 
 	for i := 0; i < N; i++ {
 	retry:
 		//l := rand.Intn(Maxlen)
-		for j := 0; j < Maxlen; j++ {
+		for j := 0; j < maxlen; j++ {
 			buf[j] = chars[rand.Intn(len(chars))]
 		}
-		s := string(buf[0:Maxlen])
+		s := string(buf[0:maxlen])
 		if known[s] {
 			goto retry
 		}

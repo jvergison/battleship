@@ -8,6 +8,29 @@ function drag(ev) {
     ev.dataTransfer.setData("text", ev.target.id);
 }
 
+function rotate(ev){
+	if(ev.which == 3 && ev.target.id){
+	
+		var img = document.getElementById(ev.target.id);
+		if(img.getAttribute("data-rot") == "ver")
+		{
+			console.log("hor");
+			img.src = ev.target.src.replace("%20rot","");
+			img.setAttribute("data-rot", "hor");
+		}
+		else
+		{
+			console.log("ver");
+			img.src = ev.target.src.replace(".png"," rot.png");
+			img.setAttribute("data-rot", "ver");
+		}
+	}
+	e.preventDefault();
+	window.event.returnValue = false;
+}
+
+document.oncontextmenu=function right(){return false;};
+
 $( document ).ready(function() {
 
 	battleship = new battleshipGame("canvas");
@@ -34,11 +57,11 @@ $( document ).ready(function() {
 	<td><div id=sessionState style="height: 100px; overflow-y: scroll;"></div>
 		
 		<div id=ships>
-			<img id=ship2 data-shipsize="2" data-rot="hor" ondragstart="drag(event)" draggable=true src="static/img/ship 2.png"/>
-			<img id=ship3 data-shipsize="3" data-rot="hor" ondragstart="drag(event)" draggable=true src="static/img/ship 3.png"/>
-			<img id=ship3-2 data-shipsize="3" data-rot="hor" ondragstart="drag(event)" draggable=true src="static/img/ship 3-2.png"/>
-			<img id=ship4 data-shipsize="4" data-rot="hor" ondragstart="drag(event)" draggable=true src="static/img/ship 4.png"/>
-			<img id=ship5 data-shipsize="5" data-rot="hor" ondragstart="drag(event)" draggable=true src="static/img/ship 5.png"/>
+			<img id=ship2 data-shipsize="2" data-rot="hor" oncontextmenu="rotate(event)" ondragstart="drag(event)" draggable=true src="static/img/ship 2.png"/>
+			<img id=ship3 data-shipsize="3" data-rot="hor" oncontextmenu="rotate(event)" ondragstart="drag(event)" draggable=true src="static/img/ship 3.png"/>
+			<img id=ship3-2 data-shipsize="3" data-rot="hor" oncontextmenu="rotate(event)" ondragstart="drag(event)" draggable=true src="static/img/ship 3-2.png"/>
+			<img id=ship4 data-shipsize="4" data-rot="hor" oncontextmenu="rotate(event)" ondragstart="drag(event)" draggable=true src="static/img/ship 4.png"/>
+			<img id=ship5 data-shipsize="5" data-rot="hor" oncontextmenu="rotate(event)" ondragstart="drag(event)" draggable=true src="static/img/ship 5.png"/>
 			</br>
 			<p>Drag onto the lower grid to set. Rightclick to turn.</p>
 		</div>

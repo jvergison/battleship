@@ -6,25 +6,25 @@ import (
 )
 
 const (
-	P_STARTUP   int = 0
-	P_PLACEMENT int = 1
-	P_PLAYER1   int = 2
-	P_PLAYER2   int = 3
-	P_FINISHED  int = 4
+	pStartUp   int = 0 //initial phase value
+	pPlacement int = 1 //placement phase
+	pPlayer1   int = 2 //player 1 turn
+	pPlayer2   int = 3 //player 2 turn
+	pFinished  int = 4 //game is over
 )
 
-type Game struct {
+type game struct {
 	id           string
-	PlayerOne    *Connection
-	PlayerTwo    *Connection
+	playerOne    *connection
+	playerTwo    *connection
 	currentPhase int
 }
 
-func startGame(game *Game) {
+func startGame(game *game) {
 	fmt.Printf("game %s starts", game.id)
-	game.currentPhase = P_PLACEMENT
-	var m = Message{M_PHASE_PLACEMENT, time.Now(), nil}
+	game.currentPhase = pPlacement
+	var m = message{mPhasePlacement, time.Now(), nil}
 
-	sendMessage(m, game.PlayerOne)
-	sendMessage(m, game.PlayerTwo)
+	sendMessage(m, game.playerOne)
+	sendMessage(m, game.playerTwo)
 }

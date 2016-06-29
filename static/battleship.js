@@ -249,10 +249,7 @@ function battleshipGame(canvasId){
 		ship.x = evt.pageX - self.canvas.offsetLeft - $(this).offset().left;
 		ship.y = evt.pageY - self.canvas.offsetTop - $(this).offset().top;
 			
-		
-		
-		//todo: move left/down if not completely within grid (depends on size/rotation)
-		
+				
 		correctShipPos(ship);
 		var point = snapToFriendlyGrid(ship.x, ship.y);
 		ship.x = point.x;

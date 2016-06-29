@@ -21,12 +21,13 @@ function connect(){
 	
 	webSocket.onmessage = function(event){
 		var msg = JSON.parse(event.data);
-		console.log(msg);
+		
 		if(msg.Type == "Connection ok")
 		{
 			message.Type = "Broker new game";
 			var d = new Date();
 			message.Timestamp = d;
+			console.log("sending broker request");
 			webSocket.send(JSON.stringify(message));
 		}
 		if(msg.Type == "Join game ok"){
@@ -51,7 +52,7 @@ function connect(){
 	webSocket.onclose = function(e) {
 		console.log('Socket is closed. Reconnect will be attempted in 1 second.', e.reason);
 		setTimeout(function() {
-			message.data = {"GameId":gameId, "PlayerId":playerId};
+			message.Data = {"GameId":gameId, "PlayerId":playerId};
 			connect();
 		}, 1000)
 	};

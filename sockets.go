@@ -14,15 +14,15 @@ var upgrader = websocket.Upgrader{
 //default options
 }
 
-type Connection struct {
+type connection struct {
 	socket       *websocket.Conn
 	id           uint
-	player_id    string
-	game_id      string
+	playerID    string
+	gameID      string
 	disconnected bool
 }
 
-var conns []Connection
+var conns []connection
 
 func makeConnection(w http.ResponseWriter, r *http.Request) {
 	fmt.Println("new connection")
@@ -34,24 +34,24 @@ func makeConnection(w http.ResponseWriter, r *http.Request) {
 
 	defer conn.Close() //clean up if we ever exit this function
 
-	var c Connection = Connection{id: connCount, socket: conn, disconnected: false}
+	var c = connection{id: connCount, socket: conn, disconnected: false}
 	conns = append(conns, c)
 	connCount = connCount + 1
 
 	//let the client know we are ready to receive messages
-	var m = Message{M_CONNECTION_OK, time.Now(), nil}
+	var m = message{mConnectionOk, time.Now(), nil}
 	sendMessage(m, &c)
 
 	//start listening to messages
 	for {
-		mt, message, err := conn.ReadMessage()
+		mt, mess, err := conn.ReadMessage()
 		if err != nil {
 			c.disconnected = true
 			onDisconnect(&c)
-			log.Printf("read, player %s : %s", c.player_id, err)
+			log.Printf("read, player %s : %s", c.playerID, err)
 			break
 		}
-		handleMessage(mt, message, err, &c)
+		handleMessage(mt, mess, err, &c)
 	}
 
 }
